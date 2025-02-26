@@ -3,13 +3,19 @@ from sre_parse import Tokenizer
 from fastapi import FastAPI
 from pydantic import BaseModel
 from transformers import BertForSequenceClassification, BertTokenizer, TextClassificationPipeline
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Initialize FastAPI app
 app = FastAPI()
 
 model_path = "JungleLee/bert-toxic-comment-classification"
-tokenizer = BertTokenizer.from_pretrained(model_path)
-model = BertForSequenceClassification.from_pretrained(model_path, num_labels=2)
+hf_token = os.getenv("HUGGINGFACE_TOKEN")
+tokenizer = BertTokenizer.from_pretrained(model_path, use_auth_token=hf_token)
+model = BertForSequenceClassification.from_pretrained(model_path, num_labels=2, use_auth_token=hf_token)
 pipeline = TextClassificationPipeline(model=model, tokenizer=tokenizer)
 
 #define custom keywords and function to classify comments
